@@ -78,5 +78,13 @@ jobs:
       - name: Run Once - char-server
         run: ./char-server --run-once
 
+      - name: Upload Windows Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rAthena-Windows-Server
+          path: |
+            *.exe
+            db/
+            conf/
       - name: Run Once - map-server
         run: ./map-server --run-once
