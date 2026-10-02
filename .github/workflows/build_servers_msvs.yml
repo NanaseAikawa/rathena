@@ -1,0 +1,64 @@
+name: Build servers with MSVS
+
+concurrency:
+  group: \${{ github.repository }}- github.workflow -{{ github.ref }}
+  cancel-in-progress: \${{ github.ref != 'refs/heads/master' }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - 'tools/ci/**'
+      - 'src/**'
+      - '3rdparty/**'
+
+jobs:
+  build:
+    if: "!contains(github.event.head_commit.message, 'ci-skip')"
+    runs-on: \${{ matrix.os }}
+    strategy:
+      matrix:
+          os: [windows-latest]
+          mode: ['PRE', 'RE']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      # Hier wird eure PACKETVER vor dem Kompilieren automatisch in den Code geschrieben
+      - name: Paketversion setzen
+        shell: powershell
+        run: |
+          Set-Content -Path "src/custom/defines_pre.hpp" -Value "#ifndef CONFIG_CUSTOM_DEFINES_PRE_HPP`n#define CONFIG_CUSTOM_DEFINES_PRE_HPP`n`n#define PACKETVER 20151104`n`n#endif"
+
+      # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus
+      - name: Build solution in Release (Pre-Renewal)
+        if: \${{ matrix.mode == 'PRE' }}
+        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:DefineConstants="BUILDBOT%3BPRERE"
+
+      # Kompiliert Renewal im schnellen und stabilen Release-Modus
+      - name: Build solution in Release (Renewal)
+        if: \${{ matrix.mode == 'RE' }}
+        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:DefineConstants="BUILDBOT"
+
+      # Sammelt alle kompilierten Exen, Configs und DBs für dich
+      - name: Server-Dateien fuer den Upload sammeln
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force -Path build_output
+          Copy-Item -Path "*.exe" -Destination "build_output\" -Force
+          Copy-Item -Path "conf" -Destination "build_output\conf" -Recurse -Force
+          Copy-Item -Path "db" -Destination "build_output\db" -Recurse -Force
+
+      # Lädt deine fertige ZIP-Datei hoch
+      - name: ZIP-Datei fuer uns bereitstellen
+        uses: actions/upload-artifact@v4
+        with:
+          name: rAthena-Windows-\${{ matrix.mode }}
+          path: build_output/
