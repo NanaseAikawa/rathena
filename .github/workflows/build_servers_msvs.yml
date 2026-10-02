@@ -35,7 +35,7 @@ jobs:
       - name: Paketversion setzen
         shell: powershell
         run: |
-          Set-Content -Path "src/custom/defines_pre.hpp" -Value "#ifndef CONFIG_CUSTOM_DEFINES_PRE_HPP`n#define CONFIG_CUSTOM_DEFINES_PRE_HPP`n`n#define PACKETVER 20151104`n`n#endif"
+          Set-Content -Path "src/custom/defines_pre.hpp" -Value "#ifndef CONFIG_CUSTOM_DEFINES_PRE_HPP`n#define CONFIG_CUSTOM_DEFINES_PRE_HPP`n`n#define PACKETVER 20190605`n`n#endif"
 
       # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus
       - name: Build solution in Release (Pre-Renewal)
