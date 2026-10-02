@@ -1,8 +1,8 @@
 name: Build servers with MSVS EXE
 
 concurrency:
-  group: \${{ github.repository }}- github.workflow -{{ github.ref }}
-  cancel-in-progress: \${{ github.ref != 'refs/heads/master' }}
+  group: ${{ github.repository }}-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 on:
   workflow_dispatch:
@@ -19,10 +19,9 @@ on:
 jobs:
   build:
     if: "!contains(github.event.head_commit.message, 'ci-skip')"
-    runs-on: \${{ matrix.os }}
+    runs-on: windows-latest
     strategy:
       matrix:
-          os: [windows-latest]
           mode: ['PRE', 'RE']
 
     steps:
@@ -31,23 +30,17 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      # Hier wird eure PACKETVER vor dem Kompilieren automatisch in den Code geschrieben
-      - name: Paketversion setzen
-        shell: powershell
-        run: |
-          Set-Content -Path "src/custom/defines_pre.hpp" -Value "#ifndef CONFIG_CUSTOM_DEFINES_PRE_HPP`n#define CONFIG_CUSTOM_DEFINES_PRE_HPP`n`n#define PACKETVER 20190605`n`n#endif"
-
-      # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus
+      # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus mit unserem Datum
       - name: Build solution in Release (Pre-Renewal)
-        if: \${{ matrix.mode == 'PRE' }}
+        if: ${{ matrix.mode == 'PRE' }}
         run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:DefineConstants="BUILDBOT%3BPRERE"
 
-      # Kompiliert Renewal im schnellen und stabilen Release-Modus
+      # Kompiliert Renewal im schnellen und stabilen Release-Modus mit unserem Datum
       - name: Build solution in Release (Renewal)
-        if: \${{ matrix.mode == 'RE' }}
+        if: ${{ matrix.mode == 'RE' }}
         run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:DefineConstants="BUILDBOT"
 
-      # Sammelt alle kompilierten Exen, Configs und DBs für dich
+      # Sammelt alle kompilierten Exen, Configs und DBs für uns
       - name: Server-Dateien fuer den Upload sammeln
         shell: powershell
         run: |
@@ -56,9 +49,9 @@ jobs:
           Copy-Item -Path "conf" -Destination "build_output\conf" -Recurse -Force
           Copy-Item -Path "db" -Destination "build_output\db" -Recurse -Force
 
-      # Lädt deine fertige ZIP-Datei hoch
+      # Lädt unsere fertige ZIP-Datei hoch
       - name: ZIP-Datei fuer uns bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: rAthena-Windows-\${{ matrix.mode }}
+          name: rAthena-Windows-${{ matrix.mode }}
           path: build_output/
