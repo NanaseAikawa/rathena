@@ -1,4 +1,4 @@
-name: Build servers with MSVS
+name: Build servers with MSVS EXE
 
 concurrency:
   group: \${{ github.repository }}- github.workflow -{{ github.ref }}
