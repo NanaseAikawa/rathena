@@ -33,12 +33,12 @@ jobs:
       # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus mit unserem Datum
       - name: Build solution in Release (Pre-Renewal)
         if: ${{ matrix.mode == 'PRE' }}
-        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:DefineConstants="BUILDBOT%3BPRERE"
+        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:Platform=x64 /p:DefineConstants="BUILDBOT%3BPRERE"
 
       # Kompiliert Renewal im schnellen und stabilen Release-Modus mit unserem Datum
       - name: Build solution in Release (Renewal)
         if: ${{ matrix.mode == 'RE' }}
-        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:DefineConstants="BUILDBOT"
+        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:Platform=x64 /p:DefineConstants="BUILDBOT"
 
       # Sammelt alle kompilierten Exen, Configs und DBs für uns
       - name: Server-Dateien fuer den Upload sammeln
