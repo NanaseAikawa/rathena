@@ -20,9 +20,6 @@ jobs:
   build:
     if: "!contains(github.event.head_commit.message, 'ci-skip')"
     runs-on: windows-latest
-    strategy:
-      matrix:
-          mode: ['PRE', 'RE']
 
     steps:
       - uses: actions/checkout@v4
@@ -32,13 +29,7 @@ jobs:
 
       # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus mit unserem Datum
       - name: Build solution in Release (Pre-Renewal)
-        if: ${{ matrix.mode == 'PRE' }}
         run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:Platform=x64 /p:DefineConstants="BUILDBOT%3BPRERE"
-
-      # Kompiliert Renewal im schnellen und stabilen Release-Modus mit unserem Datum
-      - name: Build solution in Release (Renewal)
-        if: ${{ matrix.mode == 'RE' }}
-        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:Platform=x64 /p:DefineConstants="BUILDBOT"
 
       # Sammelt alle kompilierten Exen, Configs und DBs für uns
       - name: Server-Dateien fuer den Upload sammeln
@@ -53,5 +44,5 @@ jobs:
       - name: ZIP-Datei fuer uns bereitstellen
         uses: actions/upload-artifact@v4
         with:
-          name: rAthena-Windows-${{ matrix.mode }}
+          name: rAthena-Windows-PreRenewal
           path: build_output/
