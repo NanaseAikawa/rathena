@@ -27852,13 +27852,14 @@ BUILDIN_FUNC(meshyperlink) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
-BUILDIN_FUNC(refreshdeathcount) {
-	TBL_PC* sd = script_rid2sd(st);
-	if (sd == NULL)
-		return 0;
+BUILDIN_FUNC(refreshdeathcount)
+{
+	map_session_data* sd = script->rid2sd(st);
+	if (sd == nullptr)
+		return runtime_error;
 
-	clif_updatestatus(sd, SP_DEATHCOUNT);
-	return 0;
+	clif->updatestatus(sd, SP_STATUS);
+	return num_current;
 }
 
 BUILDIN_FUNC(mesemotion){
