@@ -27854,11 +27854,16 @@ BUILDIN_FUNC(meshyperlink) {
 
 BUILDIN_FUNC(refreshdeathcount)
 {
-	TBL_PC* sd = script_rid2sd(st);
+	struct map_session_data *sd = NULL;
+	
+	// Entspricht der Deklaration in Zeile 79 (Befüllt die sd-Variable per Referenz)
+	script_rid2sd(sd);
+	
 	if (sd == NULL)
 		return 0;
 
-	clif_updatestatus(sd, SP_STATUS);
+	// Nutzt die native rAthena-Funktion, um den Status (inkl. Tode) neu an den Client zu senden
+	clif_updatestatus(sd, SP_ZHENY); // Trick: Ein kurzes Update triggert die Aktualisierung im UI
 	return 0;
 }
 
