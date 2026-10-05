@@ -27852,6 +27852,15 @@ BUILDIN_FUNC(meshyperlink) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(refreshdeathcount) {
+	TBL_PC* sd = script_rid2sd(st);
+	if (sd == NULL)
+		return 0;
+
+	clif_updatestatus(sd, SP_DEATHCOUNT);
+	return 0;
+}
+
 BUILDIN_FUNC(mesemotion){
 #if PACKETVER >= 20230302
 	int32 id = script_getnum(st, 2);
@@ -27930,6 +27939,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(mes,"v*"),
 	BUILDIN_DEF(next,""),
 	BUILDIN_DEF(clear,""),
+	BUILDIN_DEF(refreshdeathcount, ""),
 	BUILDIN_DEF(close,""),
 	BUILDIN_DEF(close2,""),
 	BUILDIN_DEF2(close, "close3", ""),
