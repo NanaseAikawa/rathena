@@ -27852,21 +27852,6 @@ BUILDIN_FUNC(meshyperlink) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
-BUILDIN_FUNC(refreshdeathcount)
-{
-	struct map_session_data *sd = NULL;
-	
-	// Entspricht der Deklaration in Zeile 79 (Befüllt die sd-Variable per Referenz)
-	script_rid2sd(sd);
-	
-	if (sd == NULL)
-		return 0;
-
-	// Nutzt die native rAthena-Funktion, um den Status (inkl. Tode) neu an den Client zu senden
-	clif_updatestatus(sd, SP_ZHENY); // Trick: Ein kurzes Update triggert die Aktualisierung im UI
-	return 0;
-}
-
 BUILDIN_FUNC(mesemotion){
 #if PACKETVER >= 20230302
 	int32 id = script_getnum(st, 2);
@@ -27945,7 +27930,6 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(mes,"v*"),
 	BUILDIN_DEF(next,""),
 	BUILDIN_DEF(clear,""),
-	BUILDIN_DEF(refreshdeathcount, ""),
 	BUILDIN_DEF(close,""),
 	BUILDIN_DEF(close2,""),
 	BUILDIN_DEF2(close, "close3", ""),
