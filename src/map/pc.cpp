@@ -9784,7 +9784,7 @@ int32 pc_dead(map_session_data *sd,block_list *src)
 			pc_setrestartvalue(sd,1);
 			status_percent_heal(sd, 100, 100);
 			clif_resurrection( *sd );
-			pc_setinvincibletimer( *sd );
+			// pc_setinvincibletimer( *sd );
 			sc_start(sd,sd,SC_STEELBODY,100,5,skill_get_time(MO_STEELBODY,5));
 			if(mapdata_flag_gvg2(mapdata))
 				pc_respawn_timer(INVALID_TIMER, gettick(), sd->id, 0);
