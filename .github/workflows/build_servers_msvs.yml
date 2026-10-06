@@ -6,15 +6,6 @@ concurrency:
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-  pull_request:
-    paths:
-      - '.github/workflows/**'
-      - 'tools/ci/**'
-      - 'src/**'
-      - '3rdparty/**'
 
 jobs:
   build:
@@ -27,9 +18,9 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      # Kompiliert Pre-Renewal im schnellen und stabilen Release-Modus mit unserem Datum
+      # Nutzt alle CPU-Kerne (/m) und baut inkrementell (-t:build) für maximale Geschwindigkeit
       - name: Build solution in Release (Pre-Renewal)
-        run: msbuild rAthena.sln -t:rebuild -property:Configuration=Release /p:Platform=x64 /p:DefineConstants="BUILDBOT%3BPRERE"
+        run: msbuild rAthena.sln -t:build -m -property:Configuration=Release /p:Platform=x64 /p:DefineConstants="BUILDBOT%3BPRERE"
 
       # Sammelt alle kompilierten Exen, Configs und DBs für uns
       - name: Server-Dateien fuer den Upload sammeln
